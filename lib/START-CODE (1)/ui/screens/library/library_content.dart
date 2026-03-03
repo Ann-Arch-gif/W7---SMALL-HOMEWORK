@@ -1,28 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../../data/repositories/songs/song_repository.dart';
 import '../../../model/songs/song.dart';
-import '../../states/player_state.dart';
 import '../../states/settings_state.dart';
 import '../../theme/theme.dart';
+import 'library_view_model.dart';
 
 /// Content widget for the Library screen.
-/// Contains the UI that was previously in LibraryScreen.
+/// Reads only LibraryViewModel and AppSettingsState.
+/// Delegates all presentation logic to LibraryViewModel.
+/// Kept purely declarative.
 class LibraryContent extends StatelessWidget {
   const LibraryContent({super.key});
 
   @override
   Widget build(BuildContext context) {
-    // 1- Read the global song repository
-    SongRepository songRepository = context.read<SongRepository>();
-    List<Song> songs = songRepository.fetchSongs();
+    // 1 - Watch the LibraryViewModel for songs and player data
+    LibraryViewModel viewModel = context.watch<LibraryViewModel>();
 
-    // 2- Read the global settings state
+    // 2 - Read the global settings state for theme
     AppSettingsState settingsState = context.read<AppSettingsState>();
-
-    // 3 - Watch the global player state
-    PlayerState playerState = context.watch<PlayerState>();
 
     return Container(
       color: settingsState.theme.backgroundColor,
@@ -36,14 +33,17 @@ class LibraryContent extends StatelessWidget {
 
           Expanded(
             child: ListView.builder(
-              itemCount: songs.length,
-              itemBuilder: (context, index) => SongTile(
-                song: songs[index],
-                isPlaying: playerState.currentSong == songs[index],
-                onTap: () {
-                  playerState.start(songs[index]);
-                },
-              ),
+              itemCount: viewModel.songs.length,
+              itemBuilder: (context, index) {
+                final song = viewModel.songs[index];
+                return SongTile(
+                  song: song,
+                  isPlaying: viewModel.isPlaying(song),
+                  onTap: () {
+                    viewModel.play(song);
+                  },
+                );
+              },
             ),
           ),
         ],
