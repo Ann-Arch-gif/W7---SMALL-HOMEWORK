@@ -1,7 +1,17 @@
 import 'package:flutter/widgets.dart';
 
+import '../../../data/repositories/songs/song_repository.dart';
+import '../../states/player_state.dart';
+
 /// ViewModel for the Library screen.
-/// Will be implemented in Part 4.
+/// Will be fully implemented in Part 4.
 class LibraryViewModel extends ChangeNotifier {
-  // TODO: Implement in Part 4
+  final SongRepository songRepository;
+  final PlayerState playerState;
+
+  LibraryViewModel({
+    required this.songRepository,
+    required this.playerState,
+  });
+  // TODO: Full implementation in Part 4
 }
